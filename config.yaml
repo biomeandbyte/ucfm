@@ -1,0 +1,22 @@
+# UAV crop foundation model pipeline
+# Env vars override these. Copy .env.example → .env
+
+storage:
+  backend: local           # local | s3  (s3 when UCFM_S3_BUCKET is set)
+  bucket: biomeandbyte-uav-continual-learning
+  local_root: data
+  prefix: ""
+
+train:
+  dinov2_model: facebook/dinov2-base
+  image_size: 224
+  pretrain_steps: 200
+  batch_size: 16
+  lr: 1.0e-5
+  probe_epochs: 15
+  probe_batch_size: 32
+  probe_lr: 1.0e-3
+
+eval:
+  ws_dir: eval/ws
+  gs_dir: eval/gs

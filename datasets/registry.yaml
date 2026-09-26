@@ -1,0 +1,3 @@
+# Register datasets after uploading to s3://$UCFM_S3_BUCKET/pool/<id>/
+# Merging to main triggers training via GitHub Actions.
+datasets: []

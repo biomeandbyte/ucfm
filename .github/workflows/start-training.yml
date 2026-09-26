@@ -1,0 +1,47 @@
+name: Start SageMaker training
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - datasets/registry.yaml
+  workflow_dispatch:
+    inputs:
+      task:
+        description: What SageMaker should run
+        required: true
+        default: train
+        type: choice
+        options:
+          - baseline
+          - train
+
+jobs:
+  start:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Create training job and exit
+        env:
+          UCFM_S3_BUCKET: ${{ secrets.UCFM_S3_BUCKET }}
+          SAGEMAKER_ROLE_ARN: ${{ secrets.SAGEMAKER_ROLE_ARN }}
+          SAGEMAKER_IMAGE_URI: ${{ secrets.SAGEMAKER_IMAGE_URI }}
+          INSTANCE_TYPE: ${{ vars.SAGEMAKER_INSTANCE_TYPE }}
+          TASK: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.task || 'train' }}
+        run: |
+          set -euo pipefail
+          INSTANCE="${INSTANCE_TYPE:-ml.g4dn.xlarge}"
+          NAME="ucfm-${TASK}-${GITHUB_RUN_ID}"
+          aws sagemaker create-training-job \
+            --training-job-name "$NAME" \
+            --role-arn "$SAGEMAKER_ROLE_ARN" \
+            --algorithm-specification "{\"TrainingImage\":\"${SAGEMAKER_IMAGE_URI}\",\"TrainingInputMode\":\"File\"}" \
+            --resource-config "{\"InstanceType\":\"${INSTANCE}\",\"InstanceCount\":1,\"VolumeSizeInGB\":100}" \
+            --output-data-config "{\"S3OutputPath\":\"s3://${UCFM_S3_BUCKET}/sagemaker-output/\"}" \
+            --stopping-condition '{"MaxRuntimeInSeconds":259200}' \
+            --environment "{\"UCFM_S3_BUCKET\":\"${UCFM_S3_BUCKET}\",\"UCFM_TASK\":\"${TASK}\",\"AWS_DEFAULT_REGION\":\"${AWS_DEFAULT_REGION}\"}"
+          echo "Started ${NAME} on ${INSTANCE}. This workflow does not wait."
