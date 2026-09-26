@@ -1,3 +1,6 @@
-# Register datasets after uploading to s3://$UCFM_S3_BUCKET/pool/<id>/
-# Merging to main triggers training via GitHub Actions.
-datasets: []
+datasets:
+  - id: shrestha_2025_uav
+    added: 2026-09-26
+    added_by: timi
+    source: "Midwest UAV plots imagery"
+    license: "No Copyright"
