@@ -24,13 +24,13 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+          aws-region: ${{ vars.AWS_DEFAULT_REGION || secrets.AWS_DEFAULT_REGION || 'us-east-2' }}
       - name: Create training job and exit
         env:
-          UCFM_S3_BUCKET: ${{ secrets.UCFM_S3_BUCKET }}
-          SAGEMAKER_ROLE_ARN: ${{ secrets.SAGEMAKER_ROLE_ARN }}
-          SAGEMAKER_IMAGE_URI: ${{ secrets.SAGEMAKER_IMAGE_URI }}
-          INSTANCE_TYPE: ${{ vars.SAGEMAKER_INSTANCE_TYPE }}
+          UCFM_S3_BUCKET: ${{ vars.UCFM_S3_BUCKET || secrets.UCFM_S3_BUCKET }}
+          SAGEMAKER_ROLE_ARN: ${{ vars.SAGEMAKER_ROLE_ARN || secrets.SAGEMAKER_ROLE_ARN }}
+          SAGEMAKER_IMAGE_URI: ${{ vars.SAGEMAKER_IMAGE_URI || secrets.SAGEMAKER_IMAGE_URI }}
+          INSTANCE_TYPE: ${{ vars.SAGEMAKER_INSTANCE_TYPE || secrets.SAGEMAKER_INSTANCE_TYPE }}
           TASK: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.task || 'train' }}
         run: |
           set -euo pipefail
