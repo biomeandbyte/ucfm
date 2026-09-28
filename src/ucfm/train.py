@@ -202,10 +202,10 @@ def pretrain_dinov2(store: Store) -> dict:
     )
     opt = torch.optim.AdamW(model.parameters(), lr=cfg.train.lr)
     loss_fn = nn.CosineEmbeddingLoss()
+    epochs = cfg.train.pretrain_epochs
     steps = 0
-    target = cfg.train.pretrain_steps
     last_loss = None
-    while steps < target:
+    for _ in range(epochs):
         for v1, v2 in dl:
             v1, v2 = v1.to(device), v2.to(device)
             opt.zero_grad()
@@ -217,12 +217,13 @@ def pretrain_dinov2(store: Store) -> dict:
             opt.step()
             last_loss = float(loss.item())
             steps += 1
-            if steps >= target:
-                break
-    path = save_dinov2(store, model, extra={"steps": steps, "n_pool": len(paths)})
+    path = save_dinov2(
+        store, model, extra={"steps": steps, "epochs": epochs, "n_pool": len(paths)}
+    )
     return {
         "backbone": cfg.train.dinov2_model,
         "steps": steps,
+        "epochs": epochs,
         "n_pool": len(paths),
         "loss": last_loss,
         "device": device,

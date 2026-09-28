@@ -10,7 +10,7 @@ storage:
 train:
   dinov2_model: facebook/dinov2-base
   image_size: 224
-  pretrain_steps: 200
+  pretrain_epochs: 2
   batch_size: 16
   lr: 1.0e-5
   probe_epochs: 15

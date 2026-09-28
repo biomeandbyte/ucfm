@@ -55,7 +55,7 @@ def train_and_eval(store: Store) -> dict:
             **scores,
             "baseline_ws": baseline.get("score_ws"),
             "baseline_gs": baseline.get("score_gs"),
-            "note": f"after pretrain steps={pre.get('steps')}",
+            "note": f"after pretrain epochs={pre.get('epochs')} steps={pre.get('steps')}",
         },
     )
     update_readme(store)

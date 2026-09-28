@@ -21,7 +21,7 @@ class StorageCfg(BaseModel):
 class TrainCfg(BaseModel):
     dinov2_model: str = "facebook/dinov2-base"
     image_size: int = 224
-    pretrain_steps: int = 200
+    pretrain_epochs: int = 2
     batch_size: int = 16
     lr: float = 1e-5
     probe_epochs: int = 15
