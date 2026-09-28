@@ -2,5 +2,5 @@ datasets:
   - id: shrestha_2025_uav
     added: 2026-09-26
     added_by: timi
-    source: "Midwest UAV plots imagery"
+    source: "Midwest UAV subplots imagery"
     license: "No Copyright"
