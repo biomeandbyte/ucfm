@@ -14,12 +14,12 @@ Continually grow a **vision foundation model** for crop UAV imagery by pooling m
 ## Results
 
 <!-- ucfm:metrics:start -->
-_Updated 2026-09-27 04:47 UTC. Dashed gold = baseline (DINOv2, no pool pretrain)._
+_Updated 2026-09-28 03:51 UTC. Dashed gold = baseline (DINOv2, no pool pretrain)._
 
 | # pool images | ws (val acc) | gs (val acc) | note |
 |--------------:|-------------:|-------------:|------|
-| 0 (baseline) | 0.564 | 0.431 | no pool pretrain |
-| 7281 | 0.668 | 0.423 | after pretrain steps=200 |
+| 0 (baseline) | 0.596 | 0.443 | no pool pretrain |
+| 7281 | 0.644 | 0.485 | after pretrain epochs=2 steps=912 |
 
 ![ws/gs vs pool size](assets/performance.png)
 <!-- ucfm:metrics:end -->
