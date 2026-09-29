@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from ucfm.config import load_config
+from ucfm.coverage import update_coverage_readme
 from ucfm.metrics import update_readme
 from ucfm.pipeline import ensure_eval_present, run_baseline_phase, train_and_eval
 from ucfm.registry import load_registry
@@ -63,6 +64,10 @@ def cmd_update_readme(args) -> None:
     print(update_readme(store))
 
 
+def cmd_render_map(args) -> None:
+    print(update_coverage_readme(load_registry()))
+
+
 def build_parser() -> argparse.ArgumentParser:
     parent = argparse.ArgumentParser(add_help=False)
     parent.add_argument("--config", default=None)
@@ -101,6 +106,13 @@ def build_parser() -> argparse.ArgumentParser:
         parents=[parent],
     )
     s.set_defaults(func=cmd_update_readme)
+
+    s = sub.add_parser(
+        "render-map",
+        help="Redraw assets/coverage.png and the map section in README.md",
+        parents=[parent],
+    )
+    s.set_defaults(func=cmd_render_map)
     return p
 
 

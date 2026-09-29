@@ -1,6 +1,31 @@
+# Public dataset registry — one entry per dataset in the training pool.
+# Propose data on a branch: add an entry, run `ucfm render-map`, open a pull request.
+# `source` is a link to the files. `sites` are the fields those images came from.
+# Images stay out of git. See README.md.
+
 datasets:
   - id: shrestha_2025_uav
+    title: "Multistate maize UAV trials"
     added: 2026-09-26
     added_by: timi
-    source: "Midwest UAV subplots imagery"
+    source: "https://doi.org/10.5061/dryad.905qftttm"
     license: "No Copyright"
+    crop: maize
+    year: 2022
+    note: "Five of the six published trial sites. North Platte, NE is omitted because those drone images could not be stitched."
+    sites:
+      - name: Scottsbluff, NE
+        lat: 41.85
+        lon: -103.70
+      - name: Lincoln, NE
+        lat: 40.86
+        lon: -96.61
+      - name: Missouri Valley, IA
+        lat: 41.67
+        lon: -95.94
+      - name: Ames, IA
+        lat: 42.01
+        lon: -93.73
+      - name: Crawfordsville, IA
+        lat: 41.19
+        lon: -91.48

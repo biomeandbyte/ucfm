@@ -15,7 +15,8 @@ def test_build_readme_section():
     )
     assert METRICS_START in section
     assert METRICS_END in section
-    assert "100" in section
+    assert "assets/performance.png" in section
+    assert "|" not in section
 
 
 def test_update_readme(tmp_path):

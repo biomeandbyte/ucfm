@@ -61,39 +61,13 @@ def load_baseline(store: Store) -> dict | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _fmt_score(value) -> str:
-    if value is None:
-        return "—"
-    return f"{float(value):.3f}"
-
-
-def _metrics_table(metrics: list[dict], baseline: dict) -> str:
-    lines = [
-        "| # pool images | ws (val acc) | gs (val acc) | note |",
-        "|--------------:|-------------:|-------------:|------|",
-    ]
-    if baseline:
-        lines.append(
-            f"| 0 (baseline) | {_fmt_score(baseline.get('score_ws'))} | "
-            f"{_fmt_score(baseline.get('score_gs'))} | no pool pretrain |"
-        )
-    for row in metrics:
-        if row.get("n_images") == 0 and row.get("note", "").startswith("baseline"):
-            continue
-        lines.append(
-            f"| {row.get('n_images', '—')} | {_fmt_score(row.get('score_ws'))} | "
-            f"{_fmt_score(row.get('score_gs'))} | {row.get('note', '')} |"
-        )
-    if len(lines) == 2:
-        lines.append("| — | — | — | no runs yet |")
-    return "\n".join(lines)
-
-
 def render_chart(metrics: list[dict], baseline: dict, dest: Path) -> Path:
     import matplotlib
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+
+    from matplotlib.ticker import FuncFormatter
 
     dest.parent.mkdir(parents=True, exist_ok=True)
     xs = [m.get("n_images", 0) for m in metrics if m.get("score_ws") is not None]
@@ -102,38 +76,53 @@ def render_chart(metrics: list[dict], baseline: dict, dest: Path) -> Path:
     b_ws = baseline.get("score_ws")
     b_gs = baseline.get("score_gs")
 
-    fig, axes = plt.subplots(1, 2, figsize=(10, 4), dpi=120)
+    paper, ink, grid = "#f4f6f3", "#1c2820", "#d3dbd4"
+    fig, axes = plt.subplots(1, 2, figsize=(11.2, 4.2), dpi=160, facecolor=paper)
     for ax, ys, title, color, bline in (
-        (axes[0], ws, "Water stress (ws)", "#2a9d6f", b_ws),
-        (axes[1], gs, "Growth stage (gs)", "#3d8fd1", b_gs),
+        (axes[0], ws, "Water stress", "#9c4221", b_ws),
+        (axes[1], gs, "Growth stage", "#1f4d3a", b_gs),
     ):
-        if xs and ys:
-            ax.plot(xs, ys, "o-", color=color, label=title)
+        ax.set_facecolor(paper)
         if bline is not None and xs:
-            ax.axhline(float(bline), color="#c9a227", linestyle="--", label="baseline")
-        ax.set_title(title)
-        ax.set_xlabel("# pretrained images")
-        ax.set_ylabel("val accuracy")
+            ax.axhline(
+                float(bline), color="#8a8378", linestyle=(0, (4, 3)), linewidth=1.1,
+                label="Baseline (no pool pretraining)", zorder=2,
+            )
+        if xs and ys:
+            ax.plot(
+                xs, ys, "o-", color=color, linewidth=1.8, markersize=5.5,
+                markeredgecolor=paper, markeredgewidth=1.0, label="Pool-pretrained", zorder=3,
+            )
+        ax.set_title(title, loc="left", fontsize=11, color=ink, pad=8)
+        ax.set_xlabel("Images in pretraining pool", fontsize=8.5, color="#3e4a40")
+        ax.set_ylabel("Validation accuracy (linear probe)", fontsize=8.5, color="#3e4a40")
         ax.set_ylim(0, 1)
-        ax.grid(True, alpha=0.3)
+        ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _p: f"{v:,.0f}"))
+        ax.tick_params(labelsize=8, colors="#3e4a40", length=0, pad=4)
+        ax.grid(True, axis="y", color=grid, linewidth=0.6, zorder=0)
+        for side in ("top", "right"):
+            ax.spines[side].set_visible(False)
+        for side in ("left", "bottom"):
+            ax.spines[side].set_color(grid)
         if xs:
-            ax.legend(loc="lower right", fontsize=8)
-    fig.tight_layout()
-    fig.savefig(dest, bbox_inches="tight")
+            ax.legend(loc="lower right", fontsize=7.5, frameon=False)
+    fig.tight_layout(w_pad=3)
+    fig.savefig(dest, bbox_inches="tight", facecolor=paper)
     plt.close(fig)
     return dest
 
 
 def build_readme_section(metrics: list[dict], baseline: dict) -> str:
-    updated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    updated = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     return "\n".join(
         [
             METRICS_START,
-            f"_Updated {updated}. Dashed gold = baseline (DINOv2, no pool pretrain)._",
+            "![Validation accuracy on water stress and growth stage vs images in the "
+            "pretraining pool](assets/performance.png)",
             "",
-            _metrics_table(metrics, baseline),
-            "",
-            "![ws/gs vs pool size](assets/performance.png)",
+            "_Validation accuracy of a linear probe on frozen features, by number of images "
+            "in the pretraining pool. Dashed line: DINOv2 before any pool pretraining. "
+            f"Updated {updated}._",
             METRICS_END,
         ]
     )
