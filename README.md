@@ -23,7 +23,7 @@ _Each dot is a field site listed in `datasets/registry.yaml`. The frame follows 
 <!-- ucfm:metrics:start -->
 ![Validation accuracy on water stress and growth stage vs images in the pretraining pool](assets/performance.png)
 
-_Validation accuracy of a linear probe on frozen features, by number of images in the pretraining pool. Dashed line: DINOv2 before any pool pretraining. Updated 2026-09-29._
+_Validation accuracy of a linear probe on frozen features, by number of images in the pretraining pool. Dashed line: DINOv2 before any pool pretraining. Updated 2026-11-06._
 <!-- ucfm:metrics:end -->
 
 ## Contribute a dataset
