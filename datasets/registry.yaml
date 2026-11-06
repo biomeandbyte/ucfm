@@ -29,3 +29,16 @@ datasets:
       - name: Crawfordsville, IA
         lat: 41.19
         lon: -91.48
+  - id: maulit_2023_kaz_fs05
+    title: "East Kazakhstan wheat, barley, and soybean UAV — flight session 5"
+    added: 2026-11-06
+    added_by: timi
+    source: "https://doi.org/10.5281/zenodo.7748792"
+    license: "CC BY 4.0"
+    crop: wheat, barley, soybean
+    year: 2022
+    note: "Raw RGB JPEGs from flight session 5 only (1183 images). Multispectral TIF bands were not added to the pool."
+    sites:
+      - name: Ust-Kamenogorsk, East Kazakhstan
+        lat: 50.03
+        lon: 82.58
